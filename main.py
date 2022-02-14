@@ -94,6 +94,7 @@ if __name__=="__main__":
         elif "open" and "website" in query:
             query = query.replace("open ","")
             query = query.replace(" website","")
+            Speak(f"Openig {query} website")
             webbrowser.open(f"www.{query}.com")
         
 
