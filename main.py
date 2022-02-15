@@ -1,4 +1,5 @@
 import os
+from winreg import QueryReflectionKey
 import pyttsx3
 import speech_recognition as sr
 import pywhatkit as py
@@ -96,6 +97,10 @@ if __name__=="__main__":
             query = query.replace(" website","")
             Speak(f"Opening {query} website")
             webbrowser.open(f"www.{query}.com")
+        elif "shutdown computer" in query:
+            os.system("shutdown /s /t 0")
+        elif "restart computer" in query:
+            os.system("shutdown /r /t 0")    
         
 
              
