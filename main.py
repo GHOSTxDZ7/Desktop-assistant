@@ -1,22 +1,28 @@
 import os
+from email import message
+from dataclasses import replace
 from unittest import result
 from winreg import QueryReflectionKey
 from bs4 import BeautifulSoup
 import pyttsx3
 import speech_recognition as sr
 import pywhatkit as py
-#import keyboard as kb
+import keyboard as kb
 import webbrowser
 import datetime
 import wikipedia
 from googletrans import Translator
 import requests
 import bs4
+import speedtest
+from pywikihow import search_wikihow
+import pyautogui
+
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
 engine.setProperty("voice",voices[1].id)
-engine.setProperty("rate",187)
+engine.setProperty("rate",201)
 
 def Speak(audio):
     print("   ")
@@ -24,36 +30,37 @@ def Speak(audio):
     print("   ")
     engine.say(audio)
     engine.runAndWait()
+
 '''
 def autoYT():
     while True:
         query = TakeCommand()
-        if "exit" in query:
-            Speak("autoYT has stopped") 
-        elif "pause" or "resume" in query:
-            kb.press("space bar")
-        elif "full screen" in query:
-            kb.press("f")
-        elif "default view" in query:
-            kb.press("t")
-        elif "miniplayer mode" in query:
-            kb.press("i")
-        elif "next video" in query:
-            kb.press_and_release("shift + n")
-        elif "previous video" in query:
-            kb.press_and_release("shift + p")
-        elif "increase speed" in query:
-            kb.press_and_release("shift + .")
-        elif "decrease speed" in query:
-            kb.press_and_release("shift + ,")
-        elif "fast forward" in query:
-            kb.press("l")
-        elif "rewind" in query:
-            kb.press("j")
-        elif "mute" or "umute" in query:
-            kb.press("m")
- '''
-
+        if 'exit' in query:
+            Speak('autoYT has stopped')
+            break 
+        elif 'pause' or 'resume' in query:
+            kb.send('spacebar')
+        elif 'full screen' in query:
+            kb.send('f')
+        elif 'default view' in query:
+            kb.send('t')
+        elif 'miniplayer mode' in query:
+            kb.send('i')
+        elif 'next video' in query:
+            kb.send('shift + n')
+        elif 'previous video' in query:
+            kb.send('shift + p')
+        elif 'increase speed' in query:
+            kb.send('shift + .')
+        elif 'decrease speed' in query:
+            kb.send('shift + ,')
+        elif 'fast forward' in query:
+            kb.send('l')
+        elif 'rewind' in query:
+            kb.send('j')
+        elif 'mute' or 'umute' in query:
+            kb.send('m')
+'''
     
 def TakeCommand():
     r = sr.Recognizer()
@@ -114,6 +121,38 @@ def temperature():
     temp = data.find("div",class_="BNeawe").text
     Speak(f"The temperature is : {temp}")
 
+def SpeedTest():
+    Speak("Hold on, checking your internet speed")
+    speed = speedtest.Speedtest()
+    downloading = speed.download()
+    download_speed = int(downloading/800000)
+    uploading = speed.upload()
+    upload_speed = int(uploading/800000)
+    Speak(f"The download speed is {download_speed} megabits per second and the uploading speed is {upload_speed} megabits per second")
+
+def date():
+    from datetime import date
+    today = date.today()	
+    d = today.strftime("%B %d, %Y")
+    Speak(f"Todays date is {d}")  
+
+def note():
+    Speak("Allright I am ready to write")
+    data = TakeCommand()
+    time = datetime.datetime.now().strftime("%H:%M")
+    filename = time.replace(":","-") + "-note.txt"
+
+    with open(filename,"w") as file:
+        file.write(data)
+
+    path_1 = f"E:\\Programming\\AI ASSISTANT\\{filename}"
+    path_2 = f"E:\\Programming\\AI ASSISTANT\\Database\\notes\\{filename}"
+    os.rename(path_1,path_2)
+    os.startfile(path_2)
+
+def close_notepad():
+    os.system("TASKKILL /F /im Notepad.exe")
+
 if __name__=="__main__":
     Speak("Hello, how may I help you. ")
     while True:
@@ -128,16 +167,18 @@ if __name__=="__main__":
             query = query.replace("on youtube","")
             Speak("ok just a second")
             py.playonyt(query)
-
+            
         elif "google search" in query:
             Speak("Ok, This is what I have found on Google")
             query = query.replace("google search","")
             py.search(query)
 
-        elif "the time" in query:
+        elif "time" in query:
             strTime = datetime.datetime.now().strftime("%H:%M:%S") 
-            print(f"The time is {strTime}")   
             Speak(f"The time is {strTime}")
+
+        elif "date" in query:
+            date()
 
         elif "wikipedia" in query:
             Speak("Searching Wikipedia...")
@@ -172,3 +213,31 @@ if __name__=="__main__":
         
         elif "temperature" in query:
             temperature()
+
+        elif "internet speed" in query:
+            SpeedTest()    
+        
+        elif "send a whatsapp message" in query:
+            Speak("OK, tell me the name or phone number of the person")
+            number = TakeCommand()
+            Speak("Now tell me the message")
+            message = TakeCommand()
+            import whatsapp
+            whatsapp.whatsapp(number,message)
+
+        elif "how to" in query:
+            Speak("OK, searching on internet")
+            max_result = 1
+            question = search_wikihow(query,max_result)
+            assert len(question) == 1
+            Speak(question[0].summary)
+        
+        elif "screenshot" in query:
+            pyautogui.hotkey("win","printscreen")
+            Speak("Screenshot saved")
+
+        elif "note" in query:
+            note()
+        
+        elif "close notepad" in query:
+            close_notepad()

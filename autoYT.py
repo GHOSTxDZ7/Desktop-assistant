@@ -11,25 +11,25 @@ def YT():
             main.Speak('autoYT has stopped')
             break 
         elif 'pause' or 'resume' in query:
-            kb.press('spacebar')
+            kb.send('spacebar')
         elif 'full screen' in query:
-            kb.press('f')
+            kb.send('f')
         elif 'default view' in query:
-            kb.press('t')
+            kb.send('t')
         elif 'miniplayer mode' in query:
-            kb.press('i')
+            kb.send('i')
         elif 'next video' in query:
-            kb.press_and_release('shift + n')
+            kb.send('shift + n')
         elif 'previous video' in query:
-            kb.press_and_release('shift + p')
+            kb.send('shift + p')
         elif 'increase speed' in query:
-            kb.press_and_release('shift + .')
+            kb.send('shift + .')
         elif 'decrease speed' in query:
-            kb.press_and_release('shift + ,')
+            kb.send('shift + ,')
         elif 'fast forward' in query:
-            kb.press('l')
+            kb.send('l')
         elif 'rewind' in query:
-            kb.press('j')
+            kb.send('j')
         elif 'mute' or 'umute' in query:
-            kb.press('m')
+            kb.send('m')
 YT()                 
