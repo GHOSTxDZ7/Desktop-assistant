@@ -17,11 +17,16 @@ import bs4
 import speedtest
 from pywikihow import search_wikihow
 import pyautogui
-
+import psutil
+import pytube
+from pytube import YouTube
+import time
+import pyperclip
+import wolframalpha
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
-engine.setProperty("voice",voices[1].id)
+engine.setProperty("voice",voices[0].id)
 engine.setProperty("rate",201)
 
 def Speak(audio):
@@ -30,38 +35,7 @@ def Speak(audio):
     print("   ")
     engine.say(audio)
     engine.runAndWait()
-
-'''
-def autoYT():
-    while True:
-        query = TakeCommand()
-        if 'exit' in query:
-            Speak('autoYT has stopped')
-            break 
-        elif 'pause' or 'resume' in query:
-            kb.send('spacebar')
-        elif 'full screen' in query:
-            kb.send('f')
-        elif 'default view' in query:
-            kb.send('t')
-        elif 'miniplayer mode' in query:
-            kb.send('i')
-        elif 'next video' in query:
-            kb.send('shift + n')
-        elif 'previous video' in query:
-            kb.send('shift + p')
-        elif 'increase speed' in query:
-            kb.send('shift + .')
-        elif 'decrease speed' in query:
-            kb.send('shift + ,')
-        elif 'fast forward' in query:
-            kb.send('l')
-        elif 'rewind' in query:
-            kb.send('j')
-        elif 'mute' or 'umute' in query:
-            kb.send('m')
-'''
-    
+   
 def TakeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -102,10 +76,10 @@ def translate():
     while True:
         Speak("Do you wat to translate more sentences ?")
         answer = TakeCommand()
-        if answer == "no":
+        if answer == "close translator":
             Speak("OK, closing translator")
             break
-        else:
+        elif "yes" in query:
             Speak("OK, Tell me the text to translate")
             line = TakeCommandHindi()
             translator = Translator()
@@ -150,8 +124,54 @@ def note():
     os.rename(path_1,path_2)
     os.startfile(path_2)
 
+def YouTube_Download(link):
+    url = pytube.YouTube(link)
+    video = url.streams.get_highest_resolution()
+    video.download("E:\\Programming\\AI ASSISTANT\\Database\\Youtube")
+
 def close_notepad():
     os.system("TASKKILL /F /im Notepad.exe")
+    Speak("File closed")
+
+def Wolfram(query):
+    api_key = "AYQ232-4TQWETHGXG"
+    requester = wolframalpha.Client(api_key)
+    requested = requester.query(query)
+
+    try:
+        answer = next(requested.results).text
+        return answer
+
+    except:
+        Speak("Anser not found in database")
+
+def Calculator(query):
+    Term = str(query)
+
+    Term = Term.replace("multiply","*")
+    Term = Term.replace("multiplied by","*")
+    Term = Term.replace("into","*")
+    Term = Term.replace("plus","+")
+    Term = Term.replace("minus","-")
+    Term = Term.replace("plus","+")
+    Term = Term.replace("by","/")
+    Term = Term.replace("devided by","/")
+    Term = Term.replace("upon","/")
+
+    try:
+        result = Wolfram(Term)
+        Speak(result)
+    except:
+        Speak("Error while calculating, please try again")
+
+def temp_any(query):
+    result = Wolfram(query)
+    Speak(f"{query} is : {result}")
+
+
+    
+
+
 
 if __name__=="__main__":
     Speak("Hello, how may I help you. ")
@@ -211,7 +231,7 @@ if __name__=="__main__":
         elif "start translator" in query:
             translate()
         
-        elif "temperature" in query:
+        elif "outside" in query:
             temperature()
 
         elif "internet speed" in query:
@@ -239,5 +259,36 @@ if __name__=="__main__":
         elif "note" in query:
             note()
         
-        elif "close notepad" in query:
+        elif "close file" in query:
             close_notepad()
+
+        elif "battery percentage" in query:
+            battery = psutil.sensors_battery()
+            Speak(f"{battery.percent}%")
+            
+        elif "open command prompt" in query:
+            os.system("start cmd")
+        
+        elif "close cmd" in query:
+            os.system("TASKKILL /F /im cmd.exe")
+            Speak("Command Prompt closed")
+
+        elif "download this video" in query:
+            Speak("Video is downloading, you will be notified when the download is completed")
+            time.sleep(2)
+            pyautogui.click(x=466, y=47)
+            pyautogui.hotkey("ctrl","c")
+            Link = pyperclip.paste()
+            YouTube_Download(Link)
+            Speak("Video downloaded. Playing the video")
+            Title = YouTube(Link)
+            Title = Title.title
+            os.startfile(f"E:\\Programming\\AI ASSISTANT\\Database\\Youtube\\{Title}.mp4")
+
+        elif "calculate" in query:
+            query = query.replace("calculate","")
+            Calculator(query)    
+
+        elif "temperature" in query:
+            temp_any(query)    
+    
