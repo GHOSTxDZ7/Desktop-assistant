@@ -23,6 +23,7 @@ from pytube import YouTube
 import time
 import pyperclip
 import wolframalpha
+import cv2
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -290,5 +291,38 @@ if __name__=="__main__":
             Calculator(query)    
 
         elif "temperature" in query:
-            temp_any(query)    
-    
+            temp_any(query)  
+
+        elif "volume up" in query:
+            pyautogui.press("volumeup")  
+
+        elif "volume down" in query:
+            pyautogui.press("volumedown")
+
+        elif "mute" in query:
+            pyautogui.press("mute")
+
+        elif "whatsapp" in query:
+            webbrowser.open("https://web.whatsapp.com/")
+        
+        elif "take a picture" or "click a photo" in query:
+            camera_port = 0
+            ramp_frames = 30
+            camera = cv2.VideoCapture(camera_port)
+
+            def get_image():
+                retval, im = camera.read()
+                return im
+
+            for i in range(ramp_frames):
+                temp = get_image()
+
+            Speak("Capturing face")
+
+            camera_capture = get_image()
+            file = "test.png"
+            cv2.imwrite(file, camera_capture)
+
+            del camera
+            Speak("Picture saved")
+                        
