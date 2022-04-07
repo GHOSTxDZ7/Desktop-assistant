@@ -171,9 +171,6 @@ def temp_any(query):
 
 
     
-
-
-
 if __name__=="__main__":
     Speak("Hello, how may I help you. ")
     while True:
@@ -300,29 +297,14 @@ if __name__=="__main__":
             pyautogui.press("volumedown")
 
         elif "mute" in query:
-            pyautogui.press("mute")
+            pyautogui.press("volumemute")
 
         elif "whatsapp" in query:
             webbrowser.open("https://web.whatsapp.com/")
         
-        elif "take a picture" or "click a photo" in query:
-            camera_port = 0
-            ramp_frames = 30
-            camera = cv2.VideoCapture(camera_port)
-
-            def get_image():
-                retval, im = camera.read()
-                return im
-
-            for i in range(ramp_frames):
-                temp = get_image()
-
-            Speak("Capturing face")
-
-            camera_capture = get_image()
-            file = "test.png"
-            cv2.imwrite(file, camera_capture)
-
-            del camera
+        elif "take a picture" in query:
+            Speak("Taking picture")
+            import cam
+            cam.take_photo()
             Speak("Picture saved")
                         
